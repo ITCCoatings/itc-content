@@ -1,0 +1,3685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ITC Coatings — Master Company Database</title>
+<style>
+:root {
+  --itc-green: #2d5016;
+  --itc-green-light: #3d6b20;
+  --itc-green-pale: #e8f0e2;
+  --itc-green-mid: #5a8a3c;
+  --bg: #f5f7f3;
+  --white: #ffffff;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-500: #6b7280;
+  --gray-700: #374151;
+  --gray-900: #111827;
+  --red-500: #ef4444;
+  --red-100: #fee2e2;
+  --amber-500: #f59e0b;
+  --amber-100: #fef3c7;
+  --blue-500: #3b82f6;
+  --blue-100: #dbeafe;
+  --purple-500: #8b5cf6;
+  --purple-100: #ede9fe;
+  --teal-500: #14b8a6;
+  --teal-100: #ccfbf1;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--gray-900); }
+.header { background: linear-gradient(135deg, var(--itc-green), var(--itc-green-light)); color: white; padding: 24px 32px; }
+.header h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+.header p { font-size: 14px; opacity: 0.85; }
+.container { max-width: 1600px; margin: 0 auto; padding: 20px; }
+
+/* Stats Cards */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: var(--white); border-radius: 10px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-left: 4px solid var(--itc-green); }
+.stat-card .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-500); font-weight: 600; }
+.stat-card .value { font-size: 28px; font-weight: 700; color: var(--itc-green); margin-top: 4px; }
+.stat-card .sub { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+.stat-card.customer { border-left-color: var(--itc-green); }
+.stat-card.prospect { border-left-color: var(--blue-500); }
+.stat-card.dormant { border-left-color: var(--amber-500); }
+.stat-card.partner { border-left-color: var(--purple-500); }
+.stat-card.revenue { border-left-color: var(--teal-500); }
+
+/* Breakdown panels */
+.breakdown-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.breakdown-panel { background: var(--white); border-radius: 10px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.breakdown-panel h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-500); margin-bottom: 10px; }
+.breakdown-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 13px; }
+.breakdown-item .bar-wrap { flex: 1; margin: 0 12px; height: 6px; background: var(--gray-100); border-radius: 3px; }
+.breakdown-item .bar { height: 100%; border-radius: 3px; background: var(--itc-green-mid); }
+.breakdown-item .count { font-weight: 600; min-width: 30px; text-align: right; color: var(--gray-700); }
+
+/* Filters */
+.filters { background: var(--white); border-radius: 10px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.filters input, .filters select { padding: 8px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 13px; outline: none; }
+.filters input:focus, .filters select:focus { border-color: var(--itc-green); box-shadow: 0 0 0 2px rgba(45,80,22,0.15); }
+.filters input[type="text"] { min-width: 260px; }
+.filters select { min-width: 150px; }
+.filter-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray-500); font-weight: 600; }
+.btn-reset { padding: 8px 16px; background: var(--gray-200); border: none; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--gray-700); }
+.btn-reset:hover { background: var(--gray-300); }
+.btn-export { padding: 8px 16px; background: var(--itc-green); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
+.btn-export:hover { background: var(--itc-green-light); }
+.result-count { font-size: 13px; color: var(--gray-500); margin-left: auto; }
+
+/* Table */
+.table-wrap { background: var(--white); border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th { position: sticky; top: 0; background: var(--itc-green); color: white; padding: 10px 12px; text-align: left; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; user-select: none; white-space: nowrap; }
+thead th:hover { background: var(--itc-green-light); }
+thead th .sort-arrow { margin-left: 4px; opacity: 0.5; }
+thead th.sorted .sort-arrow { opacity: 1; }
+tbody tr { border-bottom: 1px solid var(--gray-100); transition: background 0.15s; }
+tbody tr:hover { background: var(--itc-green-pale); }
+td { padding: 10px 12px; vertical-align: top; }
+td.company-cell { font-weight: 600; }
+td.revenue-cell { font-family: 'SF Mono', 'Consolas', monospace; text-align: right; }
+td.notes-cell { max-width: 280px; font-size: 12px; color: var(--gray-700); line-height: 1.4; }
+td.action-cell { max-width: 220px; font-size: 12px; }
+
+/* Status badges */
+.badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.badge-customer { background: var(--itc-green-pale); color: var(--itc-green); }
+.badge-dormant { background: var(--amber-100); color: #92400e; }
+.badge-engaged { background: var(--blue-100); color: #1e40af; }
+.badge-qualified { background: var(--teal-100); color: #0f766e; }
+.badge-partner { background: var(--purple-100); color: #6d28d9; }
+.badge-lead { background: var(--gray-100); color: var(--gray-700); }
+
+/* Stage badges */
+.stage { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; text-transform: uppercase; }
+.stage-active { background: #dcfce7; color: #166534; }
+.stage-engaged { background: #dbeafe; color: #1e40af; }
+.stage-qualified { background: #ccfbf1; color: #0f766e; }
+.stage-dormant { background: #fef3c7; color: #92400e; }
+.stage-new { background: #f3f4f6; color: #374151; }
+
+.contact-info { font-size: 11px; color: var(--gray-500); }
+.contact-info a { color: var(--blue-500); text-decoration: none; }
+.contact-info a:hover { text-decoration: underline; }
+
+.footer { text-align: center; padding: 24px; font-size: 12px; color: var(--gray-500); }
+
+@media (max-width: 900px) {
+  .breakdown-row { grid-template-columns: 1fr; }
+  .filters { flex-direction: column; }
+  .filters input[type="text"] { min-width: unset; width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🏭 ITC Coatings — Master Company Database</h1>
+  <p>Unified view of customers, prospects, and partners | Generated March 26, 2026</p>
+</div>
+
+<div class="container">
+  <!-- Stats -->
+  <div class="stats-grid" id="statsGrid"></div>
+  
+  <!-- Breakdowns -->
+  <div class="breakdown-row">
+    <div class="breakdown-panel" id="statusBreakdown"><h3>By Relationship Status</h3></div>
+    <div class="breakdown-panel" id="industryBreakdown"><h3>By Industry</h3></div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <div>
+      <div class="filter-label">Search</div>
+      <input type="text" id="searchInput" placeholder="Search company, contact, notes..." />
+    </div>
+    <div>
+      <div class="filter-label">Status</div>
+      <select id="statusFilter"><option value="">All Statuses</option></select>
+    </div>
+    <div>
+      <div class="filter-label">Industry</div>
+      <select id="industryFilter"><option value="">All Industries</option></select>
+    </div>
+    <div>
+      <div class="filter-label">Stage</div>
+      <select id="stageFilter"><option value="">All Stages</option></select>
+    </div>
+    <div>
+      <div class="filter-label">Country</div>
+      <select id="countryFilter"><option value="">All Countries</option></select>
+    </div>
+    <button class="btn-reset" onclick="resetFilters()">Reset</button>
+    <button class="btn-export" onclick="exportCSV()">⬇ Export CSV</button>
+    <span class="result-count" id="resultCount"></span>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th onclick="sortTable('company')">Company <span class="sort-arrow">▼</span></th>
+          <th onclick="sortTable('relationshipStatus')">Status <span class="sort-arrow">▼</span></th>
+          <th onclick="sortTable('salesStage')">Stage <span class="sort-arrow">▼</span></th>
+          <th onclick="sortTable('industry')">Industry <span class="sort-arrow">▼</span></th>
+          <th onclick="sortTable('lifetimeRevenue')">Revenue <span class="sort-arrow">▼</span></th>
+          <th onclick="sortTable('lastOrderDate')">Last Order <span class="sort-arrow">▼</span></th>
+          <th onclick="sortTable('country')">Location <span class="sort-arrow">▼</span></th>
+          <th>Contacts</th>
+          <th>Action</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    ITC Coatings Master Pipeline — 109 Companies | Data merged from QuickBooks, Prospect Lists, and Active Opportunities<br>
+    Built by Cosmo 🚀 | Confidential — Internal Use Only
+  </div>
+</div>
+
+<script>
+// Embedded data
+const DATA = {
+  "generatedDate": "2026-03-26T00:00:00.000Z",
+  "summary": {
+    "totalCompanies": 109,
+    "totalLifetimeRevenue": 1061968.61,
+    "byRelationshipStatus": {
+      "Partner": 5,
+      "Customer": 43,
+      "Dormant": 35,
+      "Qualified Prospect": 16,
+      "Engaged Prospect": 10
+    },
+    "byIndustry": {
+      "Oil & Gas": 4,
+      "Construction/Demolition": 3,
+      "Industrial/Other": 41,
+      "Industrial Services": 10,
+      "Ceramics/Pottery": 6,
+      "Heat Treatment": 9,
+      "Refractory Services": 24,
+      "Steel/Metals": 8,
+      "Boiler Services": 2,
+      "Waste-to-Energy": 1,
+      "Sales Partner": 1
+    }
+  },
+  "companies": [
+    {
+      "id": 1,
+      "company": "JTEX Energy",
+      "contacts": [
+        {
+          "name": "",
+          "email": "ap@jtexenergy.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Oil & Gas",
+      "city": "San Angelo",
+      "state": "TX",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Partner",
+      "lifetimeRevenue": 153800,
+      "lastOrderDate": "2025-11-26",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Continue partnership - oilfield rep channel",
+      "notes": "Oilfield rep. Permian Resources active, Chevron testing, Kinder Morgan ~100 wellheads. Talor Nunez contact.",
+      "products": [
+        "Products:ITC 213 Gallon"
+      ],
+      "invoiceCount": 59,
+      "balance": 4500,
+      "lat": 31.4638,
+      "lng": -100.437,
+      "source": "QBO"
+    },
+    {
+      "id": 2,
+      "company": "Demo Plus",
+      "contacts": [
+        {
+          "name": "",
+          "email": "office@demoplusmn.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Construction/Demolition",
+      "city": "St. Cloud",
+      "state": "MN",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 120555,
+      "lastOrderDate": "2025-08-27",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 11,
+      "balance": 0,
+      "lat": 45.5579,
+      "lng": -94.1632,
+      "source": "QBO"
+    },
+    {
+      "id": 3,
+      "company": "Perfectanswer, lda",
+      "contacts": [
+        {
+          "name": "",
+          "email": "import@perfectanswer.pt",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "",
+      "state": "",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 88758,
+      "lastOrderDate": "2026-03-23",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT 5-Gallon Pail",
+        "Sales",
+        "ITC 100HT 5 Gallon Sample",
+        "ITC 213 gallon sample"
+      ],
+      "invoiceCount": 3,
+      "balance": 31680,
+      "lat": 32.88,
+      "lng": -97.15,
+      "source": "QBO"
+    },
+    {
+      "id": 4,
+      "company": "JC Industrial Services",
+      "contacts": [
+        {
+          "name": "",
+          "email": "chris@jcindustrialservices.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial Services",
+      "city": "Michigan City",
+      "state": "IN",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Partner",
+      "lifetimeRevenue": 72865,
+      "lastOrderDate": "2026-03-23",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Support Veolia relationship through Steve Williams",
+      "notes": "Key partner for Veolia WTE opportunity. Steve Williams managing SDAs and kilns. Tom Murphy VP champion at Veolia.",
+      "products": [
+        "Products:ITC 100HT 5-Gallon Pail",
+        "Products:ITC 296A Gallon",
+        "Products:ITC 213 5-Gallon Pail",
+        "Products:ITC 213 Gallon",
+        "Products:ITC 296A 5-Gallon Pail",
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 13,
+      "balance": 11181.17,
+      "lat": 41.7075,
+      "lng": -86.895,
+      "source": "QBO"
+    },
+    {
+      "id": 5,
+      "company": "Rodbay Oy",
+      "contacts": [
+        {
+          "name": "",
+          "email": "sami.vapalahti@rodbay.fi",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Tampere",
+      "state": "",
+      "country": "Finland",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 71660.5,
+      "lastOrderDate": "2025-07-02",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 296A Gallon",
+        "ITC 213 gallon sample",
+        "Products:ITC 213 Gallon",
+        "100HT gallon Sample"
+      ],
+      "invoiceCount": 4,
+      "balance": 0,
+      "lat": 61.4978,
+      "lng": 23.761,
+      "source": "QBO"
+    },
+    {
+      "id": 6,
+      "company": "CeraMaterials",
+      "contacts": [
+        {
+          "name": "",
+          "email": "malisad@ceramaterials.com",
+          "phone": "(518) 701-6722",
+          "role": ""
+        }
+      ],
+      "industry": "Ceramics/Pottery",
+      "city": "DINGMANS FERRY",
+      "state": "PA",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 53666,
+      "lastOrderDate": "2026-03-25",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT 5-Gallon Pail",
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 213 Gallon",
+        "Products:ITC 296A Gallon",
+        "Products:ITC 296A 5-Gallon Pail"
+      ],
+      "invoiceCount": 74,
+      "balance": 3230,
+      "lat": 41.217,
+      "lng": -74.8885,
+      "source": "QBO"
+    },
+    {
+      "id": 7,
+      "company": "Victor Manuel Anaya Aguilar",
+      "contacts": [
+        {
+          "name": "",
+          "email": "ficermex@prodigy.net.mx, anaya.victorm@gmail.com",
+          "phone": "(956) 790-1530",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Irapuato",
+      "state": "G.T.O.",
+      "country": "Mexico",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 47055,
+      "lastOrderDate": "2026-02-03",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT 5-Gallon Pail",
+        "Products:ITC 296A 5-Gallon Pail",
+        "Products:ITC 213 5-Gallon Pail"
+      ],
+      "invoiceCount": 4,
+      "balance": 0,
+      "lat": 20.6736,
+      "lng": -101.348,
+      "source": "QBO"
+    },
+    {
+      "id": 8,
+      "company": "CIC Pittsburg, LLC.",
+      "contacts": [
+        {
+          "name": "",
+          "email": "ap@cicpgh.com",
+          "phone": "(412) 344-5340",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Pittsburgh",
+      "state": "PA",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 46840,
+      "lastOrderDate": "2026-03-23",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT 5-Gallon Pail",
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 213 Gallon"
+      ],
+      "invoiceCount": 14,
+      "balance": 3640,
+      "lat": 40.4406,
+      "lng": -79.9959,
+      "source": "QBO"
+    },
+    {
+      "id": 9,
+      "company": "NorHeat Treatment Inc.",
+      "contacts": [
+        {
+          "name": "",
+          "email": "Tom@norheat.CA",
+          "phone": "(905) 730-4169",
+          "role": ""
+        }
+      ],
+      "industry": "Heat Treatment",
+      "city": "Waterdown",
+      "state": "ON",
+      "country": "CA",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 35321.5,
+      "lastOrderDate": "2024-09-03",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2024-09-03. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 100HT 5-Gallon Pail",
+        "Products:ITC 213 Gallon",
+        "Products:ITC 296A Gallon",
+        "Products:ITC 148 Gallon"
+      ],
+      "invoiceCount": 5,
+      "balance": 0,
+      "lat": 43.334,
+      "lng": -79.896,
+      "source": "QBO"
+    },
+    {
+      "id": 10,
+      "company": "WIR",
+      "contacts": [
+        {
+          "name": "",
+          "email": "Christa.Brietzke@wir-investment.com",
+          "phone": "+49 2853 / 912 16 9",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Schermbeck",
+      "state": "",
+      "country": "Germany",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 33600,
+      "lastOrderDate": "2023-06-02",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2023-06-02. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT 5-Gallon Pail"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 51.697,
+      "lng": 6.875,
+      "source": "QBO"
+    },
+    {
+      "id": 11,
+      "company": "Thermal Coating Solutions, LLC",
+      "contacts": [
+        {
+          "name": "",
+          "email": "greg@itccoatings.com",
+          "phone": "(724) 986-9528",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial Services",
+      "city": "Canonsburg",
+      "state": "PA",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 30497.5,
+      "lastOrderDate": "2026-03-19",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Internal/Greg entity - monitor",
+      "notes": "Greg Odenthal entity - Head Engineer/Closer",
+      "products": [
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 213 Gallon",
+        "Products:ITC 296A Gallon"
+      ],
+      "invoiceCount": 16,
+      "balance": 5030.25,
+      "lat": 40.2626,
+      "lng": -80.1873,
+      "source": "QBO"
+    },
+    {
+      "id": 12,
+      "company": "Womack Tank & Manufacturing, LLC",
+      "contacts": [
+        {
+          "name": "",
+          "email": "kelly@womacktank.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "San Angelo",
+      "state": "TX",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 20565,
+      "lastOrderDate": "2025-09-17",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 213 Gallon"
+      ],
+      "invoiceCount": 27,
+      "balance": 570,
+      "lat": 31.4638,
+      "lng": -100.437,
+      "source": "QBO"
+    },
+    {
+      "id": 13,
+      "company": "NorHeat Coatings",
+      "contacts": [
+        {
+          "name": "",
+          "email": "tom@norheat.ca",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Heat Treatment",
+      "city": "Waterdown",
+      "state": "Ontario",
+      "country": "CA",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 19886.25,
+      "lastOrderDate": "2025-06-18",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT 5-Gallon Pail",
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 213 Gallon",
+        "Products:ITC 296A Gallon"
+      ],
+      "invoiceCount": 2,
+      "balance": 0,
+      "lat": 43.334,
+      "lng": -79.896,
+      "source": "QBO"
+    },
+    {
+      "id": 14,
+      "company": "Refractory Service Inc.",
+      "contacts": [
+        {
+          "name": "",
+          "email": "ap@refractoryservice.com",
+          "phone": "(262) 677-6025",
+          "role": ""
+        }
+      ],
+      "industry": "Refractory Services",
+      "city": "Jackson",
+      "state": "WI",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 17960,
+      "lastOrderDate": "2026-03-26",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Upsell/cross-sell - already a customer",
+      "notes": "RSI - Existing customer - DO NOT cold outreach.",
+      "products": [
+        "ITC 100HT Trial Gallon",
+        "Products:ITC 100HT 5-Gallon Pail",
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 8,
+      "balance": 4480,
+      "lat": 43.3236,
+      "lng": -88.1668,
+      "source": "QBO"
+    },
+    {
+      "id": 15,
+      "company": "Heat treating Services Unlimited, Inc.",
+      "contacts": [
+        {
+          "name": "",
+          "email": "jprosser@htsu.com",
+          "phone": "(864) 289-0644",
+          "role": ""
+        }
+      ],
+      "industry": "Heat Treatment",
+      "city": "Simpsonville",
+      "state": "SC",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 12359.87,
+      "lastOrderDate": "2025-06-23",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Upsell/cross-sell - already a customer",
+      "notes": "Existing customer - DO NOT cold outreach. On prospect list but already buying.",
+      "products": [
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 213 Gallon"
+      ],
+      "invoiceCount": 12,
+      "balance": 0,
+      "lat": 34.7371,
+      "lng": -82.2543,
+      "source": "QBO"
+    },
+    {
+      "id": 16,
+      "company": "McNeil Sales & Service, Inc.",
+      "contacts": [
+        {
+          "name": "",
+          "email": "sales@mcneilusa.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Attn: Accounts",
+      "state": "Payable",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 11380,
+      "lastOrderDate": "2025-12-03",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Upsell/cross-sell - already a customer",
+      "notes": "Existing customer - DO NOT cold outreach. On prospect list but already buying.",
+      "products": [
+        "Products:ITC 213 Gallon",
+        "Products:ITC 100HT 5-Gallon Pail",
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 7,
+      "balance": 0,
+      "lat": 32.88,
+      "lng": -97.15,
+      "source": "QBO"
+    },
+    {
+      "id": 17,
+      "company": "Electrotherm LTD.",
+      "contacts": [
+        {
+          "name": "",
+          "email": "ranf@electrotherm.co.il",
+          "phone": "00972-77-8660640",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "P.O. Box 232",
+      "state": "Migdal Haemek",
+      "country": "Israel",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 11149,
+      "lastOrderDate": "2025-12-30",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 5,
+      "balance": 0,
+      "lat": 32.6745,
+      "lng": 35.2424,
+      "source": "QBO"
+    },
+    {
+      "id": 18,
+      "company": "Lanexis Private Limited",
+      "contacts": [
+        {
+          "name": "",
+          "email": "impex@lanexis.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "New Delhi",
+      "state": "",
+      "country": "India",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 10905,
+      "lastOrderDate": "2025-03-03",
+      "salesStage": "Engaged",
+      "recommendedAction": "Follow up mid-week - AJ contact",
+      "notes": "India-based distributor. Follow up mid-week with AJ.",
+      "products": [
+        "Products:ITC 100HT 5-Gallon Pail",
+        "Products:ITC 213 Gallon",
+        "Products:ITC 296A Gallon",
+        "Products:ITC 100HT Gallon",
+        "Products:ITC Spray Gun"
+      ],
+      "invoiceCount": 3,
+      "balance": 1600,
+      "lat": 28.6139,
+      "lng": 77.209,
+      "source": "QBO"
+    },
+    {
+      "id": 19,
+      "company": "Onex, Inc.",
+      "contacts": [
+        {
+          "name": "",
+          "email": "ap@onexinc.com",
+          "phone": "(814) 838-9638",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Erie",
+      "state": "PA",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 10580,
+      "lastOrderDate": "2025-04-03",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Upsell/cross-sell - already a customer",
+      "notes": "Existing customer (multiple entities) - DO NOT cold outreach.",
+      "products": [
+        "Products:ITC 213 Gallon",
+        "Products:ITC 296A Gallon",
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 6,
+      "balance": 0,
+      "lat": 42.1292,
+      "lng": -80.0851,
+      "source": "QBO"
+    },
+    {
+      "id": 20,
+      "company": "Oleo Acres Farrier Supply",
+      "contacts": [
+        {
+          "name": "",
+          "email": "oafarriersupply@outlook.com",
+          "phone": "3039790446",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Berthoud",
+      "state": "CO",
+      "country": "United States",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 10330,
+      "lastOrderDate": "2026-03-04",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 148 Gallon"
+      ],
+      "invoiceCount": 9,
+      "balance": 0,
+      "lat": 40.3083,
+      "lng": -105.0811,
+      "source": "QBO"
+    },
+    {
+      "id": 21,
+      "company": "Onex Construction",
+      "contacts": [
+        {
+          "name": "",
+          "email": "dbidgood@onexconstruction.com",
+          "phone": "(330) 995-9015",
+          "role": ""
+        }
+      ],
+      "industry": "Construction/Demolition",
+      "city": "Streetsboro",
+      "state": "OH",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 10138,
+      "lastOrderDate": "2024-09-23",
+      "salesStage": "Dormant",
+      "recommendedAction": "Upsell/cross-sell - already a customer",
+      "notes": "Existing customer (multiple entities) - DO NOT cold outreach.",
+      "products": [
+        "Products:ITC 100HT Gallon",
+        "Products:Restock"
+      ],
+      "invoiceCount": 2,
+      "balance": 0,
+      "lat": 41.2392,
+      "lng": -81.3459,
+      "source": "QBO"
+    },
+    {
+      "id": 22,
+      "company": "Chiz Bros. Inc.",
+      "contacts": [
+        {
+          "name": "",
+          "email": "dmarch@chizbros.com",
+          "phone": "(412) 384-5220",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Elizabeth",
+      "state": "PA",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 9820,
+      "lastOrderDate": "2025-04-22",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 5,
+      "balance": 0,
+      "lat": 40.2692,
+      "lng": -79.8876,
+      "source": "QBO"
+    },
+    {
+      "id": 23,
+      "company": "Plibrico Company LLC",
+      "contacts": [
+        {
+          "name": "",
+          "email": "Lsimonds@plibricofl.com",
+          "phone": "(863) 519-5044",
+          "role": ""
+        }
+      ],
+      "industry": "Refractory Services",
+      "city": "Bartow",
+      "state": "FL",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 9105,
+      "lastOrderDate": "2025-09-10",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Upsell/cross-sell - already a customer",
+      "notes": "Existing customer - DO NOT cold outreach. On prospect list but already buying.",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 3,
+      "balance": 0,
+      "lat": 27.8964,
+      "lng": -81.8431,
+      "source": "QBO"
+    },
+    {
+      "id": 24,
+      "company": "Rad-Con",
+      "contacts": [
+        {
+          "name": "",
+          "email": "apinvoices@rad-con.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Heat Treatment",
+      "city": "Lakewood",
+      "state": "OH",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 8555,
+      "lastOrderDate": "2025-06-16",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 4,
+      "balance": 0,
+      "lat": 41.4819,
+      "lng": -81.7982,
+      "source": "QBO"
+    },
+    {
+      "id": 25,
+      "company": "Staltec",
+      "contacts": [
+        {
+          "name": "",
+          "email": "micha.umfahrer@staltec.com",
+          "phone": "+49 170 5245331",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Düren",
+      "state": "",
+      "country": "Germany",
+      "companySize": "",
+      "relationshipStatus": "Partner",
+      "lifetimeRevenue": 8315,
+      "lastOrderDate": "2026-03-12",
+      "salesStage": "Engaged",
+      "recommendedAction": "Partnership discussion call 3/26 - Christian from HKM connection",
+      "notes": "European partner discussion. Connected through HKM.",
+      "products": [
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 213 Gallon",
+        "Products:ITC 296A Gallon"
+      ],
+      "invoiceCount": 7,
+      "balance": 0,
+      "lat": 50.805,
+      "lng": 6.485,
+      "source": "QBO"
+    },
+    {
+      "id": 26,
+      "company": "RG Smith of Mansfield",
+      "contacts": [
+        {
+          "name": "",
+          "email": "mwilgus@rgsmithcompany.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Mansfield",
+      "state": "OH",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 7410,
+      "lastOrderDate": "2024-02-08",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2024-02-08. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT 5-Gallon Pail",
+        "Products:ITC 213 Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 40.7589,
+      "lng": -82.5154,
+      "source": "QBO"
+    },
+    {
+      "id": 27,
+      "company": "TrueCore Supply",
+      "contacts": [
+        {
+          "name": "",
+          "email": "ryan@truecoresupply.com",
+          "phone": "(425) 777-7336",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Land O Lakes",
+      "state": "FL",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 6045,
+      "lastOrderDate": "2026-03-23",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Sales",
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 213 Gallon",
+        "Products:ITC 100HT 5-Gallon Pail",
+        "Products:ITC 100HT Pint"
+      ],
+      "invoiceCount": 11,
+      "balance": 0,
+      "lat": 28.2189,
+      "lng": -82.4576,
+      "source": "QBO"
+    },
+    {
+      "id": 28,
+      "company": "Bennington Potters, Inc.",
+      "contacts": [
+        {
+          "name": "",
+          "email": "SHarden@benningtonpotters.com",
+          "phone": "(802) 447-7531",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Bennington",
+      "state": "Vermont",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 6020,
+      "lastOrderDate": "2026-03-02",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT 5-Gallon Pail",
+        "Products:ITC 296A 5-Gallon Pail"
+      ],
+      "invoiceCount": 1,
+      "balance": 6020,
+      "lat": 42.8782,
+      "lng": -73.1968,
+      "source": "QBO"
+    },
+    {
+      "id": 29,
+      "company": "Williams Ind'l Service, Inc.",
+      "contacts": [
+        {
+          "name": "",
+          "email": "RaubenoltG@wisfurnaces.com",
+          "phone": "(419) 353-2120",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Bowling Green",
+      "state": "OH",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 6000,
+      "lastOrderDate": "2024-05-15",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2024-05-15. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 296A Gallon",
+        "Shipping"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 41.3748,
+      "lng": -83.6513,
+      "source": "QBO"
+    },
+    {
+      "id": 30,
+      "company": "Gerdau Monroe Mill",
+      "contacts": [
+        {
+          "name": "",
+          "email": "GSNAccountsPayable@Gerdau.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Steel/Metals",
+      "city": "Chesterton",
+      "state": "IN",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 6000,
+      "lastOrderDate": "2025-04-07",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 303EC Electrode Coating"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 41.6106,
+      "lng": -87.0642,
+      "source": "QBO"
+    },
+    {
+      "id": 31,
+      "company": "Industrial Power Systems",
+      "contacts": [
+        {
+          "name": "",
+          "email": "apinquiry@ipscontractor.com",
+          "phone": "(419) 787-0109",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial Services",
+      "city": "",
+      "state": "",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 5740,
+      "lastOrderDate": "2023-05-24",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2023-05-24. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 32.88,
+      "lng": -97.15,
+      "source": "QBO"
+    },
+    {
+      "id": 32,
+      "company": "Louisiana-Pacific Corp.",
+      "contacts": [
+        {
+          "name": "",
+          "email": "Accounts.Payable@LPCorp.com, Kim.Scribner@lpcorp.com",
+          "phone": "(218) 834-8703",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "HAYDEN LAKE",
+      "state": "ID",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 5150,
+      "lastOrderDate": "2026-02-12",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 296A Gallon"
+      ],
+      "invoiceCount": 2,
+      "balance": 0,
+      "lat": 47.7668,
+      "lng": -116.7569,
+      "source": "QBO"
+    },
+    {
+      "id": 33,
+      "company": "US Refractory Products",
+      "contacts": [
+        {
+          "name": "",
+          "email": "tdemarco@usrefractory.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Refractory Services",
+      "city": "North Ridgeville",
+      "state": "OH",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 5000,
+      "lastOrderDate": "2026-03-18",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 213 Gallon"
+      ],
+      "invoiceCount": 2,
+      "balance": 2960,
+      "lat": 41.3892,
+      "lng": -82.019,
+      "source": "QBO"
+    },
+    {
+      "id": 34,
+      "company": "Southwest Metal Treating",
+      "contacts": [
+        {
+          "name": "",
+          "email": "jamesa@swmt.net",
+          "phone": "(346) 262-9692",
+          "role": ""
+        }
+      ],
+      "industry": "Steel/Metals",
+      "city": "Fort Worth",
+      "state": "TX",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 4925,
+      "lastOrderDate": "2025-04-21",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 2,
+      "balance": 0,
+      "lat": 32.7555,
+      "lng": -97.3308,
+      "source": "QBO"
+    },
+    {
+      "id": 35,
+      "company": "EA Fab Corporation",
+      "contacts": [
+        {
+          "name": "",
+          "email": "mackenzie.kunig@eafabcorp.com",
+          "phone": "(724) 693-8800 Ext. 110",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "",
+      "state": "",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 4790,
+      "lastOrderDate": "2023-09-18",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2023-09-18. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 213 Gallon",
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 296A Gallon"
+      ],
+      "invoiceCount": 2,
+      "balance": 572.72,
+      "lat": 32.88,
+      "lng": -97.15,
+      "source": "QBO"
+    },
+    {
+      "id": 36,
+      "company": "Ohio Industrial Sales, Inc.",
+      "contacts": [
+        {
+          "name": "",
+          "email": "ois2@neohio.twcbc.com",
+          "phone": "(330) 425-9163",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial Services",
+      "city": "Twinsburg",
+      "state": "OH",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 4700,
+      "lastOrderDate": "2025-09-10",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 2,
+      "balance": 0,
+      "lat": 41.3123,
+      "lng": -81.4401,
+      "source": "QBO"
+    },
+    {
+      "id": 37,
+      "company": "Bailey Pottery",
+      "contacts": [
+        {
+          "name": "",
+          "email": "laurie@baileypottery.com",
+          "phone": "(845) 339-3721",
+          "role": ""
+        }
+      ],
+      "industry": "Ceramics/Pottery",
+      "city": "Kingston",
+      "state": "NY",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 4480,
+      "lastOrderDate": "2025-03-03",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2025-03-03. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT 5-Gallon Pail"
+      ],
+      "invoiceCount": 4,
+      "balance": 0,
+      "lat": 41.9268,
+      "lng": -73.9974,
+      "source": "QBO"
+    },
+    {
+      "id": 38,
+      "company": "Shanghai Ronghan",
+      "contacts": [
+        {
+          "name": "",
+          "email": "zhang.ronghan@foxmail.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Shanghai",
+      "state": "",
+      "country": "China",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 4450,
+      "lastOrderDate": "2025-05-22",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 213 Gallon",
+        "Products:ITC 296A Gallon",
+        "Products:ITC 303EC Electrode Coating"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 31.2304,
+      "lng": 121.4737,
+      "source": "QBO"
+    },
+    {
+      "id": 39,
+      "company": "Laguna Clay",
+      "contacts": [
+        {
+          "name": "",
+          "email": "Info@LagunaClay.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Ceramics/Pottery",
+      "city": "City of Industry",
+      "state": "CA",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 4305,
+      "lastOrderDate": "2026-02-18",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 4,
+      "balance": 0,
+      "lat": 34.0197,
+      "lng": -117.9587,
+      "source": "QBO"
+    },
+    {
+      "id": 40,
+      "company": "Norheat Inc.",
+      "contacts": [
+        {
+          "name": "",
+          "email": "tom@norheat.ca",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Heat Treatment",
+      "city": "",
+      "state": "",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 4200,
+      "lastOrderDate": "2023-04-13",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2023-04-13. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT 5-Gallon Pail"
+      ],
+      "invoiceCount": 1,
+      "balance": 210,
+      "lat": 32.88,
+      "lng": -97.15,
+      "source": "QBO"
+    },
+    {
+      "id": 41,
+      "company": "Furnace Rebuilders, INC.",
+      "contacts": [
+        {
+          "name": "",
+          "email": "robert@furnacerebuilders.com",
+          "phone": "(704) 634-9011",
+          "role": ""
+        }
+      ],
+      "industry": "Heat Treatment",
+      "city": "Denver",
+      "state": "NC",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 3945,
+      "lastOrderDate": "2024-10-15",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2024-10-15. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 2,
+      "balance": 0,
+      "lat": 35.5323,
+      "lng": -81.0298,
+      "source": "QBO"
+    },
+    {
+      "id": 42,
+      "company": "Fire Brick Engineers Company",
+      "contacts": [
+        {
+          "name": "",
+          "email": "mbohn@fbe.net",
+          "phone": "(414) 649-4135",
+          "role": ""
+        }
+      ],
+      "industry": "Refractory Services",
+      "city": "Milwaukee",
+      "state": "WI",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 3570,
+      "lastOrderDate": "2026-02-19",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Upsell/cross-sell - already a customer",
+      "notes": "Existing customer - DO NOT cold outreach. On prospect list but already buying.",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 2,
+      "balance": 2820,
+      "lat": 43.0389,
+      "lng": -87.9065,
+      "source": "QBO"
+    },
+    {
+      "id": 43,
+      "company": "WESCO Integrated Supply",
+      "contacts": [
+        {
+          "name": "",
+          "email": "WISPO@WESCODIST.COM, KORDORFF@WESCODIST.COM",
+          "phone": "(607) 452-4112",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Port Washington",
+      "state": "NY",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 3420,
+      "lastOrderDate": "2023-08-21",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2023-08-21. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 213 Gallon"
+      ],
+      "invoiceCount": 6,
+      "balance": 0,
+      "lat": 40.8268,
+      "lng": -73.6982,
+      "source": "QBO"
+    },
+    {
+      "id": 44,
+      "company": "Mill Maintenance Services",
+      "contacts": [
+        {
+          "name": "",
+          "email": "JEN@MILLMAINTENACE.NET",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Chesterton",
+      "state": "IN",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 3275,
+      "lastOrderDate": "2025-10-16",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Install Labor",
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 213 Gallon",
+        "Products:ITC 296A Gallon"
+      ],
+      "invoiceCount": 2,
+      "balance": 0,
+      "lat": 41.6106,
+      "lng": -87.0642,
+      "source": "QBO"
+    },
+    {
+      "id": 45,
+      "company": "APPLIED INDUSTRIAL TECH.",
+      "contacts": [
+        {
+          "name": "",
+          "email": "RLTAYLOR@APPLIED.COM",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial Services",
+      "city": "CRYSTAL",
+      "state": "MN",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 3000,
+      "lastOrderDate": "2025-04-25",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 45.0322,
+      "lng": -93.3602,
+      "source": "QBO"
+    },
+    {
+      "id": 46,
+      "company": "Inferno LLC",
+      "contacts": [
+        {
+          "name": "",
+          "email": "Andy@Inferno.bz",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "",
+      "state": "",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 2920,
+      "lastOrderDate": "2026-01-28",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 213 Gallon"
+      ],
+      "invoiceCount": 3,
+      "balance": 0,
+      "lat": 32.88,
+      "lng": -97.15,
+      "source": "QBO"
+    },
+    {
+      "id": 47,
+      "company": "Chile Forge",
+      "contacts": [
+        {
+          "name": "",
+          "email": "info@chileforge.com",
+          "phone": "(520) 312-0000",
+          "role": ""
+        }
+      ],
+      "industry": "Steel/Metals",
+      "city": "Attn: Stacie",
+      "state": "Starr",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 2820,
+      "lastOrderDate": "2025-09-15",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 6,
+      "balance": 0,
+      "lat": 32.88,
+      "lng": -97.15,
+      "source": "QBO"
+    },
+    {
+      "id": 48,
+      "company": "Indutermica",
+      "contacts": [
+        {
+          "name": "",
+          "email": "sergio.perez@indutermica.com.mx",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "San Luis Potosi",
+      "state": "SL",
+      "country": "Mexico",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 2465,
+      "lastOrderDate": "2024-12-11",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2024-12-11. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 213 Gallon",
+        "Products:ITC 296A Gallon",
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 148 Gallon"
+      ],
+      "invoiceCount": 3,
+      "balance": 10,
+      "lat": 22.1565,
+      "lng": -100.9855,
+      "source": "QBO"
+    },
+    {
+      "id": 49,
+      "company": "MD Magary Construction",
+      "contacts": [],
+      "industry": "Construction/Demolition",
+      "city": "",
+      "state": "",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 2365,
+      "lastOrderDate": "2026-02-23",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 213 Gallon",
+        "Products:ITC 296A Gallon",
+        "Sales"
+      ],
+      "invoiceCount": 1,
+      "balance": 2365,
+      "lat": 32.88,
+      "lng": -97.15,
+      "source": "QBO"
+    },
+    {
+      "id": 50,
+      "company": "Valmont Coatings Pacific States Galvanizing",
+      "contacts": [
+        {
+          "name": "",
+          "email": "pgilmore@valmont.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial Services",
+      "city": "",
+      "state": "",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 2360,
+      "lastOrderDate": "2024-11-18",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2024-11-18. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 213 Gallon",
+        "Products:ITC 296A Gallon"
+      ],
+      "invoiceCount": 2,
+      "balance": 0,
+      "lat": 32.88,
+      "lng": -97.15,
+      "source": "QBO"
+    },
+    {
+      "id": 51,
+      "company": "Magrathea Metals",
+      "contacts": [
+        {
+          "name": "",
+          "email": "darren@magratheametals.com",
+          "phone": "(805) 807-2321",
+          "role": ""
+        }
+      ],
+      "industry": "Steel/Metals",
+      "city": "",
+      "state": "",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 1865,
+      "lastOrderDate": "2024-02-27",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2024-02-27. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 213 Gallon",
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 296A Gallon"
+      ],
+      "invoiceCount": 3,
+      "balance": 0,
+      "lat": 32.88,
+      "lng": -97.15,
+      "source": "QBO"
+    },
+    {
+      "id": 52,
+      "company": "Classic Industrial Services, Inc.",
+      "contacts": [
+        {
+          "name": "",
+          "email": "accountspayable@classicindustrial.us",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial Services",
+      "city": "Baton Rouge",
+      "state": "LA",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 1840,
+      "lastOrderDate": "2026-03-18",
+      "salesStage": "Engaged",
+      "recommendedAction": "Set up call with Tyler + Greg",
+      "notes": "Active customer AND engaged prospect. Need to set up call with Tyler + Greg to expand relationship.",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 1840,
+      "lat": 30.4515,
+      "lng": -91.1871,
+      "source": "QBO"
+    },
+    {
+      "id": 53,
+      "company": "Monolith Corp.",
+      "contacts": [
+        {
+          "name": "",
+          "email": "enoch.dames@monolith-corp.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "",
+      "state": "",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 1835,
+      "lastOrderDate": "2024-08-19",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2024-08-19. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 296A Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 32.88,
+      "lng": -97.15,
+      "source": "QBO"
+    },
+    {
+      "id": 54,
+      "company": "CPS Technologies Corp.",
+      "contacts": [
+        {
+          "name": "",
+          "email": "MSilva@alsic.com",
+          "phone": "(508) 525-9468",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Norton",
+      "state": "MA",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 1705,
+      "lastOrderDate": "2024-09-30",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2024-09-30. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 2,
+      "balance": 0,
+      "lat": 41.9668,
+      "lng": -71.187,
+      "source": "QBO"
+    },
+    {
+      "id": 55,
+      "company": "GPX",
+      "contacts": [
+        {
+          "name": "",
+          "email": "DWalters@gillespiepowers.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "St. Louis",
+      "state": "MO",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 1515,
+      "lastOrderDate": "2023-10-31",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2023-10-31. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 38.627,
+      "lng": -90.1994,
+      "source": "QBO"
+    },
+    {
+      "id": 56,
+      "company": "High Temp Tools",
+      "contacts": [
+        {
+          "name": "",
+          "email": "hightemptools@att.net",
+          "phone": "(205) 246-2987",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Tuscaloosa",
+      "state": "AL",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 1507,
+      "lastOrderDate": "2026-01-07",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 6,
+      "balance": 0,
+      "lat": 33.2098,
+      "lng": -87.5692,
+      "source": "QBO"
+    },
+    {
+      "id": 57,
+      "company": "SOLARGIL SA",
+      "contacts": [
+        {
+          "name": "",
+          "email": "alain@solargil.com",
+          "phone": "00 33 386 455 000",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Moutiers en Puisaye",
+      "state": "",
+      "country": "France",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 1462,
+      "lastOrderDate": "2024-09-24",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2024-09-24. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT 5-Gallon Pail"
+      ],
+      "invoiceCount": 1,
+      "balance": -8,
+      "lat": 47.6167,
+      "lng": 3.45,
+      "source": "QBO"
+    },
+    {
+      "id": 58,
+      "company": "Valmont Coatings",
+      "contacts": [
+        {
+          "name": "",
+          "email": "tressie.thompson@valmont.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial Services",
+      "city": "",
+      "state": "",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 1360,
+      "lastOrderDate": "2025-08-07",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 296A Gallon",
+        "Products:ITC 213 Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 32.88,
+      "lng": -97.15,
+      "source": "QBO"
+    },
+    {
+      "id": 59,
+      "company": "Upstate refractory services",
+      "contacts": [
+        {
+          "name": "",
+          "email": "mikeparker@upstaterefractory.com",
+          "phone": "(315) 331-2955",
+          "role": ""
+        }
+      ],
+      "industry": "Refractory Services",
+      "city": "Newark",
+      "state": "NY",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 1260,
+      "lastOrderDate": "2023-09-07",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2023-09-07. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 2,
+      "balance": 0,
+      "lat": 43.047,
+      "lng": -77.0958,
+      "source": "QBO"
+    },
+    {
+      "id": 60,
+      "company": "AlSi Ceramics",
+      "contacts": [
+        {
+          "name": "",
+          "email": "info@alsiceramics.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Ceramics/Pottery",
+      "city": "Denver",
+      "state": "CO",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 1260,
+      "lastOrderDate": "2024-08-28",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2024-08-28. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 3,
+      "balance": 0,
+      "lat": 39.7392,
+      "lng": -104.9903,
+      "source": "QBO"
+    },
+    {
+      "id": 61,
+      "company": "Arkansas Steel Associates",
+      "contacts": [],
+      "industry": "Steel/Metals",
+      "city": "Newport",
+      "state": "AR",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 1185,
+      "lastOrderDate": "2024-08-06",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2024-08-06. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT 5-Gallon Pail"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 35.6045,
+      "lng": -91.2182,
+      "source": "QBO"
+    },
+    {
+      "id": 62,
+      "company": "Atmovac GmbH",
+      "contacts": [
+        {
+          "name": "",
+          "email": "koechling@atmovac.de",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Hagen",
+      "state": "",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 1000,
+      "lastOrderDate": "2026-03-16",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 213 Gallon",
+        "Products:ITC 296A Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 1000,
+      "lat": 51.3671,
+      "lng": 7.4633,
+      "source": "QBO"
+    },
+    {
+      "id": 63,
+      "company": "Total Boiler Supply",
+      "contacts": [
+        {
+          "name": "",
+          "email": "nickd@totalboilersupply.com",
+          "phone": "+17185695464",
+          "role": ""
+        }
+      ],
+      "industry": "Boiler Services",
+      "city": "Bronx",
+      "state": "NY",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 975,
+      "lastOrderDate": "2023-10-12",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2023-10-12. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 213 Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 40.8448,
+      "lng": -73.8648,
+      "source": "QBO"
+    },
+    {
+      "id": 64,
+      "company": "Hibiscus Solutions Ltd",
+      "contacts": [
+        {
+          "name": "",
+          "email": "GordonMuldrew@metcast.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Auckland",
+      "state": "",
+      "country": "New Zealand",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 940,
+      "lastOrderDate": "2023-08-29",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2023-08-29. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": -36.8485,
+      "lng": 174.7633,
+      "source": "QBO"
+    },
+    {
+      "id": 65,
+      "company": "Boiler Specialists",
+      "contacts": [
+        {
+          "name": "",
+          "email": "pkopp@boilerspecialists.com",
+          "phone": "(216) 619-7597",
+          "role": ""
+        }
+      ],
+      "industry": "Boiler Services",
+      "city": "Cleveland",
+      "state": "OH",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 777,
+      "lastOrderDate": "2025-06-23",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 2,
+      "balance": 0,
+      "lat": 41.4993,
+      "lng": -81.6944,
+      "source": "QBO"
+    },
+    {
+      "id": 66,
+      "company": "Kevin Scott",
+      "contacts": [
+        {
+          "name": "",
+          "email": "kevin.scott@gmail.com",
+          "phone": "(408) 442-8128",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Los Gatos",
+      "state": "CA",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 750,
+      "lastOrderDate": "2025-09-02",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 100HT Gallon",
+        "Products:ITC 296A Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 37.2358,
+      "lng": -121.9624,
+      "source": "QBO"
+    },
+    {
+      "id": 67,
+      "company": "Randy Rue",
+      "contacts": [
+        {
+          "name": "",
+          "email": "randyrue@gmail.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Edmonds",
+      "state": "WA",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 730,
+      "lastOrderDate": "2024-10-07",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2024-10-07. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 2,
+      "balance": 365,
+      "lat": 47.8107,
+      "lng": -122.3774,
+      "source": "QBO"
+    },
+    {
+      "id": 68,
+      "company": "Virginia Carolina Refractory",
+      "contacts": [
+        {
+          "name": "",
+          "email": "MichelleB@vcref.com",
+          "phone": "(704) 483-1325",
+          "role": ""
+        }
+      ],
+      "industry": "Refractory Services",
+      "city": "Salisbury",
+      "state": "NC",
+      "country": "United States",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 705,
+      "lastOrderDate": "2024-09-06",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2024-09-06. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 35.671,
+      "lng": -80.4741,
+      "source": "QBO"
+    },
+    {
+      "id": 69,
+      "company": "Mark Mitsuda",
+      "contacts": [
+        {
+          "name": "",
+          "email": "mmitsuda@punahou.edu",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "HONOLULU",
+      "state": "HI",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 620,
+      "lastOrderDate": "2024-04-03",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2024-04-03. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 21.3069,
+      "lng": -157.8583,
+      "source": "QBO"
+    },
+    {
+      "id": 70,
+      "company": "Midwest Knifemakers Supply, LLC",
+      "contacts": [
+        {
+          "name": "",
+          "email": "info@usaknifemaker.com",
+          "phone": "(507) 720-6063",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Mankato",
+      "state": "MN",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 470,
+      "lastOrderDate": "2023-05-15",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2023-05-15. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 44.1636,
+      "lng": -93.9994,
+      "source": "QBO"
+    },
+    {
+      "id": 71,
+      "company": "Dan Gurney's All American Racers",
+      "contacts": [
+        {
+          "name": "",
+          "email": "AChung@aarinc.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Santa Ana",
+      "state": "CA",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 425,
+      "lastOrderDate": "2023-07-19",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2023-07-19. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 296A Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 33.7455,
+      "lng": -117.8677,
+      "source": "QBO"
+    },
+    {
+      "id": 72,
+      "company": "Nucor Arkansas",
+      "contacts": [
+        {
+          "name": "",
+          "email": "NSAAP@Nucor.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Steel/Metals",
+      "city": "Armorel",
+      "state": "AR",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 415,
+      "lastOrderDate": "2025-02-10",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2025-02-10. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 213 Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 35.9365,
+      "lng": -89.7545,
+      "source": "QBO"
+    },
+    {
+      "id": 73,
+      "company": "Dedert Corporation",
+      "contacts": [
+        {
+          "name": "",
+          "email": "m.gonser@dedert.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Homewood",
+      "state": "IL",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 394.99,
+      "lastOrderDate": "2023-09-14",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2023-09-14. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 296A Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 41.557,
+      "lng": -87.6656,
+      "source": "QBO"
+    },
+    {
+      "id": 74,
+      "company": "Seattle Pottery Supply Inc",
+      "contacts": [
+        {
+          "name": "",
+          "email": "jim@seattlepotterysupply.com",
+          "phone": "(206) 587-0670",
+          "role": ""
+        }
+      ],
+      "industry": "Ceramics/Pottery",
+      "city": "Seattle",
+      "state": "WA",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 371,
+      "lastOrderDate": "2025-04-25",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Maintain relationship - check reorder timing",
+      "notes": "",
+      "products": [
+        "Products:ITC 213 Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 47.6062,
+      "lng": -122.3321,
+      "source": "QBO"
+    },
+    {
+      "id": 75,
+      "company": "Allison Abrasives",
+      "contacts": [
+        {
+          "name": "",
+          "email": "patrick.mcadams@allisonabrasives.com",
+          "phone": "(314) 496-6913",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Lancaster",
+      "state": "KY",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 360,
+      "lastOrderDate": "2024-07-11",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2024-07-11. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 37.6195,
+      "lng": -84.578,
+      "source": "QBO"
+    },
+    {
+      "id": 76,
+      "company": "Materials Resources",
+      "contacts": [
+        {
+          "name": "",
+          "email": "White@emrsinc.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "Saint Joseph",
+      "state": "MI",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 340,
+      "lastOrderDate": "2024-03-05",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2024-03-05. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 42.1097,
+      "lng": -86.49,
+      "source": "QBO"
+    },
+    {
+      "id": 77,
+      "company": "Precision Tools Service, Inc.",
+      "contacts": [
+        {
+          "name": "",
+          "email": "hbutler@ptservice.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "",
+      "state": "",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 320,
+      "lastOrderDate": "2023-10-24",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2023-10-24. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 213 Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 32.88,
+      "lng": -97.15,
+      "source": "QBO"
+    },
+    {
+      "id": 78,
+      "company": "Global Refractory Installers and Suppliers",
+      "contacts": [
+        {
+          "name": "",
+          "email": "kelly.richards@globalrefractory.com",
+          "phone": "(920) 562-4366",
+          "role": ""
+        }
+      ],
+      "industry": "Refractory Services",
+      "city": "Green Bay",
+      "state": "WI",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 300,
+      "lastOrderDate": "2024-03-05",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2024-03-05. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 44.5133,
+      "lng": -88.0133,
+      "source": "QBO"
+    },
+    {
+      "id": 79,
+      "company": "XOTICWORKS",
+      "contacts": [
+        {
+          "name": "",
+          "email": "paul@xoticworks.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Industrial/Other",
+      "city": "",
+      "state": "",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Dormant",
+      "lifetimeRevenue": 260,
+      "lastOrderDate": "2024-02-29",
+      "salesStage": "Dormant",
+      "recommendedAction": "Re-engagement campaign - check if still operational",
+      "notes": "Last order: 2024-02-29. No orders in 12+ months.",
+      "products": [
+        "Products:ITC 100HT Gallon"
+      ],
+      "invoiceCount": 1,
+      "balance": 0,
+      "lat": 32.88,
+      "lng": -97.15,
+      "source": "QBO"
+    },
+    {
+      "id": 80,
+      "company": "JT Thorpe",
+      "contacts": [
+        {
+          "name": "",
+          "email": "",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Refractory Services",
+      "city": "Houston",
+      "state": "TX",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Qualified Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Qualified",
+      "recommendedAction": "Strategic whale - Justen sends outreach personally",
+      "notes": "Largest refractory installer in Gulf Coast. High-value target. Justen handles directly.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 29.7604,
+      "lng": -95.3698,
+      "source": "Prospect List"
+    },
+    {
+      "id": 81,
+      "company": "Diamond Refractory",
+      "contacts": [
+        {
+          "name": "M. DeLeon",
+          "email": "mdeleon@diamondrefractory.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Refractory Services",
+      "city": "Houston",
+      "state": "TX",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Engaged Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Engaged",
+      "recommendedAction": "Follow up on Email #1 sent 3/24 by Justen",
+      "notes": "Email #1 sent by Justen 3/24. Gulf Coast petrochem refractory installer.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 29.7604,
+      "lng": -95.3698,
+      "source": "Prospect List"
+    },
+    {
+      "id": 82,
+      "company": "AXIOS Industrial Group",
+      "contacts": [],
+      "industry": "Refractory Services",
+      "city": "Houston",
+      "state": "TX",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Qualified Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Qualified",
+      "recommendedAction": "Research contacts and send outreach",
+      "notes": "Gulf Coast petrochem refractory installer.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 29.76,
+      "lng": -95.37,
+      "source": "Prospect List"
+    },
+    {
+      "id": 83,
+      "company": "Marquis Industrial",
+      "contacts": [],
+      "industry": "Refractory Services",
+      "city": "Houston",
+      "state": "TX",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Qualified Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Qualified",
+      "recommendedAction": "Research contacts and send outreach",
+      "notes": "Gulf Coast petrochem refractory installer.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 29.76,
+      "lng": -95.38,
+      "source": "Prospect List"
+    },
+    {
+      "id": 84,
+      "company": "Coastal Industrial",
+      "contacts": [],
+      "industry": "Refractory Services",
+      "city": "Houston",
+      "state": "TX",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Qualified Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Qualified",
+      "recommendedAction": "Research contacts and send outreach",
+      "notes": "Gulf Coast industrial services.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 29.77,
+      "lng": -95.36,
+      "source": "Prospect List"
+    },
+    {
+      "id": 85,
+      "company": "RHI Magnesita",
+      "contacts": [],
+      "industry": "Refractory Services",
+      "city": "Vienna",
+      "state": "",
+      "country": "Austria",
+      "companySize": "",
+      "relationshipStatus": "Qualified Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Qualified",
+      "recommendedAction": "Research South America approach",
+      "notes": "Global refractory giant. HQ Vienna. EU steel/cement/petrochem segment. | RHI Magnesita South American operations.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 48.2082,
+      "lng": 16.3738,
+      "source": "Prospect List"
+    },
+    {
+      "id": 86,
+      "company": "FUSIREF",
+      "contacts": [],
+      "industry": "Refractory Services",
+      "city": "Lezennes",
+      "state": "",
+      "country": "France",
+      "companySize": "",
+      "relationshipStatus": "Qualified Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Qualified",
+      "recommendedAction": "Giuseppe to approach - EU target",
+      "notes": "EU refractory company. Steel/cement/petrochem.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 50.62,
+      "lng": 3.12,
+      "source": "Prospect List"
+    },
+    {
+      "id": 87,
+      "company": "Gouda Refractories",
+      "contacts": [],
+      "industry": "Refractory Services",
+      "city": "Gouda",
+      "state": "",
+      "country": "Netherlands",
+      "companySize": "",
+      "relationshipStatus": "Qualified Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Qualified",
+      "recommendedAction": "Giuseppe to approach - EU target",
+      "notes": "Dutch refractory company.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 52.0115,
+      "lng": 4.7105,
+      "source": "Prospect List"
+    },
+    {
+      "id": 88,
+      "company": "Pyrotek TAB",
+      "contacts": [],
+      "industry": "Refractory Services",
+      "city": "Spokane",
+      "state": "WA",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Qualified Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Qualified",
+      "recommendedAction": "Research and outreach",
+      "notes": "Refractory/thermal products for aluminum industry.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 47.6588,
+      "lng": -117.426,
+      "source": "Prospect List"
+    },
+    {
+      "id": 89,
+      "company": "Saint-Gobain",
+      "contacts": [],
+      "industry": "Refractory Services",
+      "city": "Paris",
+      "state": "",
+      "country": "France",
+      "companySize": "",
+      "relationshipStatus": "Qualified Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Qualified",
+      "recommendedAction": "Giuseppe to approach - major EU target",
+      "notes": "Global building materials/refractories giant.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 48.8566,
+      "lng": 2.3522,
+      "source": "Prospect List"
+    },
+    {
+      "id": 90,
+      "company": "Gasbarre Furnace Group",
+      "contacts": [],
+      "industry": "Heat Treatment",
+      "city": "Meadville",
+      "state": "PA",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Qualified Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Qualified",
+      "recommendedAction": "Outreach - heat treat OEM target",
+      "notes": "Heat treat furnace OEM. Potential for ITC coating spec into new furnace builds.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 41.6414,
+      "lng": -80.1514,
+      "source": "Prospect List"
+    },
+    {
+      "id": 91,
+      "company": "SECO/WARWICK",
+      "contacts": [],
+      "industry": "Heat Treatment",
+      "city": "Swidnica",
+      "state": "",
+      "country": "Poland",
+      "companySize": "",
+      "relationshipStatus": "Qualified Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Qualified",
+      "recommendedAction": "Outreach - heat treat OEM target",
+      "notes": "Global heat treat furnace OEM. HQ Poland, US operations.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 50.8423,
+      "lng": 16.4879,
+      "source": "Prospect List"
+    },
+    {
+      "id": 92,
+      "company": "McLaughlin Furnace Group",
+      "contacts": [],
+      "industry": "Heat Treatment",
+      "city": "Rancho Cucamonga",
+      "state": "CA",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Existing customer - DO NOT cold outreach. Upsell opportunities.",
+      "notes": "Existing customer on prospect list. Heat treat OEM. Already buying.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 34.1064,
+      "lng": -117.5931,
+      "source": "Prospect List"
+    },
+    {
+      "id": 93,
+      "company": "IBAR Nordeste",
+      "contacts": [],
+      "industry": "Refractory Services",
+      "city": "São Paulo",
+      "state": "",
+      "country": "Brazil",
+      "companySize": "",
+      "relationshipStatus": "Qualified Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Qualified",
+      "recommendedAction": "Research contacts for South America outreach",
+      "notes": "Brazilian refractory company.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": -23.55,
+      "lng": -46.64,
+      "source": "Prospect List"
+    },
+    {
+      "id": 94,
+      "company": "Refratechnik Mexico",
+      "contacts": [],
+      "industry": "Refractory Services",
+      "city": "Monterrey",
+      "state": "",
+      "country": "Mexico",
+      "companySize": "",
+      "relationshipStatus": "Qualified Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Qualified",
+      "recommendedAction": "Research contacts and approach",
+      "notes": "Mexican operations of German refractory group.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 25.6866,
+      "lng": -100.3161,
+      "source": "Prospect List"
+    },
+    {
+      "id": 95,
+      "company": "Alliance Refractories",
+      "contacts": [],
+      "industry": "Refractory Services",
+      "city": "Fredericton",
+      "state": "",
+      "country": "Canada",
+      "companySize": "",
+      "relationshipStatus": "Qualified Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Qualified",
+      "recommendedAction": "Research and outreach - Canadian market",
+      "notes": "Canadian refractory services.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 45.9636,
+      "lng": -66.6431,
+      "source": "Prospect List"
+    },
+    {
+      "id": 96,
+      "company": "REFTECH International",
+      "contacts": [],
+      "industry": "Refractory Services",
+      "city": "Quebec",
+      "state": "",
+      "country": "Canada",
+      "companySize": "",
+      "relationshipStatus": "Qualified Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Qualified",
+      "recommendedAction": "Research and outreach - Canadian market",
+      "notes": "Canadian refractory engineering.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 46.8139,
+      "lng": -71.208,
+      "source": "Prospect List"
+    },
+    {
+      "id": 97,
+      "company": "Novenco",
+      "contacts": [],
+      "industry": "Industrial Services",
+      "city": "Quebec",
+      "state": "",
+      "country": "Canada",
+      "companySize": "",
+      "relationshipStatus": "Qualified Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Qualified",
+      "recommendedAction": "Research and outreach - Canadian market",
+      "notes": "Canadian industrial company.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 46.82,
+      "lng": -71.21,
+      "source": "Prospect List"
+    },
+    {
+      "id": 98,
+      "company": "Gillespie & Powers",
+      "contacts": [],
+      "industry": "Refractory Services",
+      "city": "St. Louis",
+      "state": "MO",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Existing customer - DO NOT cold outreach. Upsell opportunities.",
+      "notes": "Existing customer on prospect list. Refractory contractor.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 38.627,
+      "lng": -90.1994,
+      "source": "Prospect List"
+    },
+    {
+      "id": 99,
+      "company": "voestalpine",
+      "contacts": [],
+      "industry": "Steel/Metals",
+      "city": "Kapfenberg",
+      "state": "",
+      "country": "Austria",
+      "companySize": "",
+      "relationshipStatus": "Engaged Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Engaged",
+      "recommendedAction": "Kapfenberg forge furnace trial successful - push for full order. Kindberg inquiry received.",
+      "notes": "Active customer relationship. Kapfenberg trial successful. Kindberg new inquiry. Major Austrian steel group.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 47.4444,
+      "lng": 15.2917,
+      "source": "Prospect List"
+    },
+    {
+      "id": 100,
+      "company": "Veolia (Global WTE)",
+      "contacts": [
+        {
+          "name": "Tom Murphy",
+          "email": "",
+          "phone": "",
+          "role": "VP Champion"
+        }
+      ],
+      "industry": "Waste-to-Energy",
+      "city": "Paris",
+      "state": "",
+      "country": "France",
+      "companySize": "",
+      "relationshipStatus": "Engaged Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Engaged",
+      "recommendedAction": "JC Industrial/Steve Williams working SDAs and kilns. Tom Murphy VP champion.",
+      "notes": "Global WTE opportunity. Being worked through JC Industrial partnership. High-value multi-site potential.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 48.86,
+      "lng": 2.35,
+      "source": "Prospect List"
+    },
+    {
+      "id": 101,
+      "company": "Songer Services",
+      "contacts": [
+        {
+          "name": "Mucci",
+          "email": "",
+          "phone": "",
+          "role": ""
+        },
+        {
+          "name": "Pisarcik",
+          "email": "",
+          "phone": "",
+          "role": ""
+        },
+        {
+          "name": "Schad",
+          "email": "",
+          "phone": "",
+          "role": ""
+        },
+        {
+          "name": "Darin",
+          "email": "",
+          "phone": "",
+          "role": ""
+        },
+        {
+          "name": "Williams",
+          "email": "",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Refractory Services",
+      "city": "Meadville",
+      "state": "PA",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Engaged Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Engaged",
+      "recommendedAction": "Wave 1 emails sent/planned. Follow up on responses.",
+      "notes": "Major refractory installer. Wave 1 outreach to multiple contacts underway.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 41.64,
+      "lng": -80.15,
+      "source": "Prospect List"
+    },
+    {
+      "id": 102,
+      "company": "Western Refractory",
+      "contacts": [],
+      "industry": "Refractory Services",
+      "city": "Houston",
+      "state": "TX",
+      "country": "US",
+      "companySize": "49 employees / $33.1M revenue",
+      "relationshipStatus": "Engaged Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Engaged",
+      "recommendedAction": "Draft email ready - SEND",
+      "notes": "$33.1M revenue, 49 employees. Large refractory installer. Draft outreach email prepared.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 29.76,
+      "lng": -95.37,
+      "source": "Prospect List"
+    },
+    {
+      "id": 103,
+      "company": "Cer-Met Inc",
+      "contacts": [
+        {
+          "name": "John Freeman",
+          "email": "johnfreeman@cer-metinc.com",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Ceramics/Pottery",
+      "city": "Charlotte",
+      "state": "NC",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Engaged Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Engaged",
+      "recommendedAction": "Follow up with John Freeman",
+      "notes": "Charlotte NC. Technical ceramics company.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 35.2271,
+      "lng": -80.8431,
+      "source": "Prospect List"
+    },
+    {
+      "id": 104,
+      "company": "Giuseppe Simonato (EU Sales)",
+      "contacts": [
+        {
+          "name": "Giuseppe Simonato",
+          "email": "",
+          "phone": "",
+          "role": "European Sales Manager"
+        }
+      ],
+      "industry": "Sales Partner",
+      "city": "Brescia",
+      "state": "",
+      "country": "Italy",
+      "companySize": "",
+      "relationshipStatus": "Partner",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Coordinate EU prospect outreach - Feralpi Group opportunity",
+      "notes": "ITC European Sales Manager. Working Feralpi Group and EU prospects. Key partner for RHI, FUSIREF, Gouda, Saint-Gobain approaches.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 45.5416,
+      "lng": 10.2118,
+      "source": "Prospect List"
+    },
+    {
+      "id": 105,
+      "company": "Feralpi Group",
+      "contacts": [],
+      "industry": "Steel/Metals",
+      "city": "Lonato del Garda",
+      "state": "",
+      "country": "Italy",
+      "companySize": "",
+      "relationshipStatus": "Engaged Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Engaged",
+      "recommendedAction": "Giuseppe Simonato working this opportunity",
+      "notes": "Italian steel group. Being approached through Giuseppe.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 45.4617,
+      "lng": 10.485,
+      "source": "Prospect List"
+    },
+    {
+      "id": 106,
+      "company": "Chaparral Industries",
+      "contacts": [],
+      "industry": "Industrial Services",
+      "city": "Midland",
+      "state": "TX",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Partner",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Engaged",
+      "recommendedAction": "Onboard as new applicator for JTEX",
+      "notes": "New applicator partner for JTEX Energy oilfield work.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 31.9973,
+      "lng": -102.0779,
+      "source": "Prospect List"
+    },
+    {
+      "id": 107,
+      "company": "Permian Resources",
+      "contacts": [],
+      "industry": "Oil & Gas",
+      "city": "Midland",
+      "state": "TX",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Engaged Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Engaged",
+      "recommendedAction": "Active through JTEX - monitor results",
+      "notes": "Active oilfield customer through JTEX Energy rep channel.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 32,
+      "lng": -102.08,
+      "source": "Prospect List"
+    },
+    {
+      "id": 108,
+      "company": "Chevron (Testing)",
+      "contacts": [],
+      "industry": "Oil & Gas",
+      "city": "Houston",
+      "state": "TX",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Engaged Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Engaged",
+      "recommendedAction": "Testing phase through JTEX - monitor",
+      "notes": "Testing ITC coatings in oilfield application through JTEX.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 29.76,
+      "lng": -95.38,
+      "source": "Prospect List"
+    },
+    {
+      "id": 109,
+      "company": "Kinder Morgan",
+      "contacts": [],
+      "industry": "Oil & Gas",
+      "city": "Houston",
+      "state": "TX",
+      "country": "US",
+      "companySize": "",
+      "relationshipStatus": "Engaged Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Engaged",
+      "recommendedAction": "~100 wellheads potential through JTEX",
+      "notes": "Major pipeline/midstream company. ~100 wellheads opportunity through JTEX.",
+      "products": [],
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 29.77,
+      "lng": -95.37,
+      "source": "Prospect List"
+    }
+  ]
+};
+
+let companies = DATA.companies;
+let currentSort = { field: 'lifetimeRevenue', dir: 'desc' };
+
+// Badge helpers
+function statusBadge(s) {
+  const cls = {
+    'Customer': 'badge-customer',
+    'Dormant': 'badge-dormant',
+    'Engaged Prospect': 'badge-engaged',
+    'Qualified Prospect': 'badge-qualified',
+    'Partner': 'badge-partner',
+    'New Lead': 'badge-lead'
+  }[s] || 'badge-lead';
+  return `<span class="badge ${cls}">${s}</span>`;
+}
+
+function stageBadge(s) {
+  const cls = {
+    'Active Customer': 'stage-active',
+    'Engaged': 'stage-engaged',
+    'Qualified': 'stage-qualified',
+    'Dormant': 'stage-dormant',
+    'New Lead': 'stage-new'
+  }[s] || 'stage-new';
+  return `<span class="stage ${cls}">${s}</span>`;
+}
+
+function fmtMoney(v) {
+  if (!v) return '—';
+  return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return d;
+}
+
+function contactHtml(contacts) {
+  if (!contacts || !contacts.length) return '<span class="contact-info">—</span>';
+  return contacts.map(c => {
+    let parts = [];
+    if (c.name) parts.push(c.name);
+    if (c.role) parts.push(`(${c.role})`);
+    if (c.email) parts.push(`<a href="mailto:${c.email}">${c.email}</a>`);
+    if (c.phone) parts.push(c.phone);
+    return parts.join(' ');
+  }).join('<br>');
+}
+
+function locationStr(c) {
+  let parts = [];
+  if (c.city) parts.push(c.city);
+  if (c.state) parts.push(c.state);
+  if (c.country && c.country !== 'US') parts.push(c.country);
+  return parts.join(', ') || '—';
+}
+
+// Render stats
+function renderStats() {
+  const total = companies.length;
+  const totalRev = companies.reduce((s, c) => s + (c.lifetimeRevenue || 0), 0);
+  const customers = companies.filter(c => c.relationshipStatus === 'Customer').length;
+  const prospects = companies.filter(c => c.relationshipStatus.includes('Prospect')).length;
+  const dormant = companies.filter(c => c.relationshipStatus === 'Dormant').length;
+  const partners = companies.filter(c => c.relationshipStatus === 'Partner').length;
+
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card"><div class="label">Total Companies</div><div class="value">${total}</div><div class="sub">All sources merged</div></div>
+    <div class="stat-card revenue"><div class="label">Lifetime Revenue</div><div class="value">${fmtMoney(totalRev)}</div><div class="sub">From QBO invoices</div></div>
+    <div class="stat-card customer"><div class="label">Active Customers</div><div class="value">${customers}</div><div class="sub">Ordered in last 3 years</div></div>
+    <div class="stat-card prospect"><div class="label">Prospects</div><div class="value">${prospects}</div><div class="sub">Engaged + Qualified</div></div>
+    <div class="stat-card dormant"><div class="label">Dormant</div><div class="value">${dormant}</div><div class="sub">No orders in 12+ months</div></div>
+    <div class="stat-card partner"><div class="label">Partners</div><div class="value">${partners}</div><div class="sub">Reps & channel partners</div></div>
+  `;
+}
+
+// Render breakdowns
+function renderBreakdowns() {
+  const statusCounts = {};
+  const industryCounts = {};
+  companies.forEach(c => {
+    statusCounts[c.relationshipStatus] = (statusCounts[c.relationshipStatus] || 0) + 1;
+    industryCounts[c.industry] = (industryCounts[c.industry] || 0) + 1;
+  });
+
+  const maxStatus = Math.max(...Object.values(statusCounts));
+  const maxIndustry = Math.max(...Object.values(industryCounts));
+
+  let statusHtml = '<h3>By Relationship Status</h3>';
+  Object.entries(statusCounts).sort((a,b) => b[1]-a[1]).forEach(([k,v]) => {
+    statusHtml += `<div class="breakdown-item"><span>${k}</span><div class="bar-wrap"><div class="bar" style="width:${(v/maxStatus*100)}%"></div></div><span class="count">${v}</span></div>`;
+  });
+  document.getElementById('statusBreakdown').innerHTML = statusHtml;
+
+  let industryHtml = '<h3>By Industry</h3>';
+  Object.entries(industryCounts).sort((a,b) => b[1]-a[1]).forEach(([k,v]) => {
+    industryHtml += `<div class="breakdown-item"><span>${k}</span><div class="bar-wrap"><div class="bar" style="width:${(v/maxIndustry*100)}%"></div></div><span class="count">${v}</span></div>`;
+  });
+  document.getElementById('industryBreakdown').innerHTML = industryHtml;
+}
+
+// Populate filter dropdowns
+function populateFilters() {
+  const statuses = [...new Set(companies.map(c => c.relationshipStatus))].sort();
+  const industries = [...new Set(companies.map(c => c.industry))].sort();
+  const stages = [...new Set(companies.map(c => c.salesStage))].sort();
+  const countries = [...new Set(companies.map(c => c.country || 'US'))].sort();
+
+  const sf = document.getElementById('statusFilter');
+  statuses.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; sf.appendChild(o); });
+  
+  const inf = document.getElementById('industryFilter');
+  industries.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; inf.appendChild(o); });
+
+  const stf = document.getElementById('stageFilter');
+  stages.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; stf.appendChild(o); });
+
+  const cf = document.getElementById('countryFilter');
+  countries.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; cf.appendChild(o); });
+}
+
+// Render table
+function renderTable() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const statusF = document.getElementById('statusFilter').value;
+  const industryF = document.getElementById('industryFilter').value;
+  const stageF = document.getElementById('stageFilter').value;
+  const countryF = document.getElementById('countryFilter').value;
+
+  let filtered = companies.filter(c => {
+    if (statusF && c.relationshipStatus !== statusF) return false;
+    if (industryF && c.industry !== industryF) return false;
+    if (stageF && c.salesStage !== stageF) return false;
+    if (countryF && (c.country || 'US') !== countryF) return false;
+    if (search) {
+      const haystack = [c.company, c.industry, c.notes, c.recommendedAction, c.city, c.state, c.country,
+        ...(c.contacts || []).map(ct => `${ct.name} ${ct.email} ${ct.phone}`)
+      ].join(' ').toLowerCase();
+      return haystack.includes(search);
+    }
+    return true;
+  });
+
+  // Sort
+  filtered.sort((a, b) => {
+    let va = a[currentSort.field];
+    let vb = b[currentSort.field];
+    if (typeof va === 'string') va = (va || '').toLowerCase();
+    if (typeof vb === 'string') vb = (vb || '').toLowerCase();
+    if (typeof va === 'number' || typeof vb === 'number') {
+      va = va || 0; vb = vb || 0;
+    }
+    if (va < vb) return currentSort.dir === 'asc' ? -1 : 1;
+    if (va > vb) return currentSort.dir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  document.getElementById('resultCount').textContent = `Showing ${filtered.length} of ${companies.length}`;
+
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = filtered.map(c => `
+    <tr>
+      <td class="company-cell">${c.company}</td>
+      <td>${statusBadge(c.relationshipStatus)}</td>
+      <td>${stageBadge(c.salesStage)}</td>
+      <td>${c.industry}</td>
+      <td class="revenue-cell">${c.lifetimeRevenue ? fmtMoney(c.lifetimeRevenue) : '—'}</td>
+      <td>${fmtDate(c.lastOrderDate)}</td>
+      <td>${locationStr(c)}</td>
+      <td class="contact-info">${contactHtml(c.contacts)}</td>
+      <td class="action-cell">${c.recommendedAction || '—'}</td>
+      <td class="notes-cell">${c.notes || '—'}</td>
+    </tr>
+  `).join('');
+}
+
+function sortTable(field) {
+  if (currentSort.field === field) {
+    currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+  } else {
+    currentSort.field = field;
+    currentSort.dir = field === 'lifetimeRevenue' ? 'desc' : 'asc';
+  }
+  renderTable();
+}
+
+function resetFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('statusFilter').value = '';
+  document.getElementById('industryFilter').value = '';
+  document.getElementById('stageFilter').value = '';
+  document.getElementById('countryFilter').value = '';
+  renderTable();
+}
+
+function exportCSV() {
+  const headers = ['Company','Status','Stage','Industry','Revenue','Last Order','City','State','Country','Contacts','Action','Notes'];
+  const rows = companies.map(c => [
+    c.company, c.relationshipStatus, c.salesStage, c.industry,
+    c.lifetimeRevenue || 0, c.lastOrderDate || '',
+    c.city, c.state, c.country,
+    (c.contacts||[]).map(ct => `${ct.name} ${ct.email}`.trim()).join('; '),
+    c.recommendedAction || '', c.notes || ''
+  ]);
+  let csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'itc_master_pipeline.csv';
+  a.click();
+}
+
+// Event listeners
+document.getElementById('searchInput').addEventListener('input', renderTable);
+document.getElementById('statusFilter').addEventListener('change', renderTable);
+document.getElementById('industryFilter').addEventListener('change', renderTable);
+document.getElementById('stageFilter').addEventListener('change', renderTable);
+document.getElementById('countryFilter').addEventListener('change', renderTable);
+
+// Init
+renderStats();
+renderBreakdowns();
+populateFilters();
+renderTable();
+</script>
+</body>
+</html>
