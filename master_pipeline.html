@@ -192,7 +192,7 @@ td.action-cell { max-width: 220px; font-size: 12px; }
 const DATA = {
   "generatedDate": "2026-03-26T00:00:00.000Z",
   "summary": {
-    "totalCompanies": 109,
+    "totalCompanies": 113,
     "totalLifetimeRevenue": 1061968.61,
     "byRelationshipStatus": {
       "Partner": 5,
@@ -213,7 +213,11 @@ const DATA = {
       "Boiler Services": 2,
       "Waste-to-Energy": 1,
       "Sales Partner": 1
-    }
+    },
+    "activeCustomers": 47,
+    "engagedProspects": 17,
+    "qualifiedProspects": 16,
+    "dormant": 33
   },
   "companies": [
     {
@@ -401,10 +405,10 @@ const DATA = {
       "companySize": "",
       "relationshipStatus": "Customer",
       "lifetimeRevenue": 53666,
-      "lastOrderDate": "2026-03-25",
+      "lastOrderDate": "2026-04-01",
       "salesStage": "Active Customer",
       "recommendedAction": "Maintain relationship - check reorder timing",
-      "notes": "",
+      "notes": " PO 19761 (4/1/2026) — 1 gal ITC 213 + 1 gal ITC 296A = $540. Ship to Valmont Columbia Galvanizing SC.",
       "products": [
         "Products:ITC 100HT 5-Gallon Pail",
         "Products:ITC 100HT Gallon",
@@ -1023,7 +1027,7 @@ const DATA = {
       "lastOrderDate": "2026-03-12",
       "salesStage": "Engaged",
       "recommendedAction": "Partnership discussion call 3/26 - Christian from HKM connection",
-      "notes": "European partner discussion. Connected through HKM.",
+      "notes": "European partner. Christian from HKM is key advocate in EU coking community. Dennis = ITC contact in Germany. David in Mobile AL (Big River Steel every 2 weeks). EU steel mills target list built: 33 mills (15 BF-BOF + 18 EAF). HKM + voestalpine facility analyses complete.",
       "products": [
         "Products:ITC 100HT Gallon",
         "Products:ITC 213 Gallon",
@@ -1150,12 +1154,12 @@ const DATA = {
       "state": "OH",
       "country": "US",
       "companySize": "",
-      "relationshipStatus": "Dormant",
+      "relationshipStatus": "Customer",
       "lifetimeRevenue": 6000,
-      "lastOrderDate": "2024-05-15",
-      "salesStage": "Dormant",
+      "lastOrderDate": "2026-04-01",
+      "salesStage": "Active Customer",
       "recommendedAction": "Re-engagement campaign - check if still operational",
-      "notes": "Last order: 2024-05-15. No orders in 12+ months.",
+      "notes": "PO 11106-19 (4/1/2026) — 11 gal ITC 100HT + 5 gal ITC 296A = $3,860. Reactivated. Contact: Greg Raubenolt (RaubenoltG@wisfurnaces.com).",
       "products": [
         "Products:ITC 100HT Gallon",
         "Products:ITC 296A Gallon",
@@ -1404,12 +1408,12 @@ const DATA = {
       "state": "NY",
       "country": "US",
       "companySize": "",
-      "relationshipStatus": "Dormant",
+      "relationshipStatus": "Customer",
       "lifetimeRevenue": 4480,
-      "lastOrderDate": "2025-03-03",
-      "salesStage": "Dormant",
+      "lastOrderDate": "2026-03-31",
+      "salesStage": "Active Customer",
       "recommendedAction": "Re-engagement campaign - check if still operational",
-      "notes": "Last order: 2025-03-03. No orders in 12+ months.",
+      "notes": "PO 0172664 (3/31/2026) — 1x 5-gal ITC 100HT $1,120. Long-time customer reactivated.",
       "products": [
         "Products:ITC 100HT 5-Gallon Pail"
       ],
@@ -2164,7 +2168,8 @@ const DATA = {
       "balance": 0,
       "lat": 35.6045,
       "lng": -91.2182,
-      "source": "QBO"
+      "source": "QBO",
+      "website": "arkansassteel.com"
     },
     {
       "id": 62,
@@ -2849,7 +2854,8 @@ const DATA = {
       "balance": 0,
       "lat": 29.77,
       "lng": -95.36,
-      "source": "Prospect List"
+      "source": "Prospect List",
+      "website": "techgonecoastal.com"
     },
     {
       "id": 85,
@@ -2915,7 +2921,8 @@ const DATA = {
       "balance": 0,
       "lat": 52.0115,
       "lng": 4.7105,
-      "source": "Prospect List"
+      "source": "Prospect List",
+      "website": "goudarefractories.com"
     },
     {
       "id": 88,
@@ -3025,7 +3032,8 @@ const DATA = {
       "balance": 0,
       "lat": 34.1064,
       "lng": -117.5931,
-      "source": "Prospect List"
+      "source": "Prospect List",
+      "website": "mclaughlinsvc.com"
     },
     {
       "id": 93,
@@ -3047,7 +3055,8 @@ const DATA = {
       "balance": 0,
       "lat": -23.55,
       "lng": -46.64,
-      "source": "Prospect List"
+      "source": "Prospect List",
+      "website": "ibarnordeste.com.br"
     },
     {
       "id": 94,
@@ -3113,7 +3122,8 @@ const DATA = {
       "balance": 0,
       "lat": 46.8139,
       "lng": -71.208,
-      "source": "Prospect List"
+      "source": "Prospect List",
+      "website": "abqphotoinfo.com"
     },
     {
       "id": 97,
@@ -3135,7 +3145,8 @@ const DATA = {
       "balance": 0,
       "lat": 46.82,
       "lng": -71.21,
-      "source": "Prospect List"
+      "source": "Prospect List",
+      "website": "novenco-building.com"
     },
     {
       "id": 98,
@@ -3157,7 +3168,8 @@ const DATA = {
       "balance": 0,
       "lat": 38.627,
       "lng": -90.1994,
-      "source": "Prospect List"
+      "source": "Prospect List",
+      "website": "gillespiepowers.com"
     },
     {
       "id": 99,
@@ -3173,7 +3185,7 @@ const DATA = {
       "lastOrderDate": "",
       "salesStage": "Engaged",
       "recommendedAction": "Kapfenberg forge furnace trial successful - push for full order. Kindberg inquiry received.",
-      "notes": "Active customer relationship. Kapfenberg trial successful. Kindberg new inquiry. Major Austrian steel group.",
+      "notes": "Active engagement. Kapfenberg trial with Thomas Kunsul (Greg relationship). Kindberg tube heat treatment data received & analyzed (4/1/2026). EU steel mills target list includes voestalpine Linz (BF-BOF) + Kapfenberg (EAF).",
       "products": [],
       "invoiceCount": 0,
       "balance": 0,
@@ -3363,7 +3375,8 @@ const DATA = {
       "balance": 0,
       "lat": 45.4617,
       "lng": 10.485,
-      "source": "Prospect List"
+      "source": "Prospect List",
+      "website": "feralpigroup.com"
     },
     {
       "id": 106,
@@ -3385,7 +3398,8 @@ const DATA = {
       "balance": 0,
       "lat": 31.9973,
       "lng": -102.0779,
-      "source": "Prospect List"
+      "source": "Prospect List",
+      "website": "chaparralbuilt.com"
     },
     {
       "id": 107,
@@ -3407,7 +3421,8 @@ const DATA = {
       "balance": 0,
       "lat": 32,
       "lng": -102.08,
-      "source": "Prospect List"
+      "source": "Prospect List",
+      "website": "permianres.com"
     },
     {
       "id": 108,
@@ -3451,7 +3466,124 @@ const DATA = {
       "balance": 0,
       "lat": 29.77,
       "lng": -95.37,
-      "source": "Prospect List"
+      "source": "Prospect List",
+      "website": "kindermorgan.com"
+    },
+    {
+      "id": 110,
+      "company": "HKM — Hüttenwerke Krupp Mannesmann",
+      "contacts": [
+        {
+          "name": "Christian (via Staltec)",
+          "email": "",
+          "phone": "",
+          "role": "Advocate / Champion"
+        }
+      ],
+      "industry": "Steel — Integrated BF-BOF",
+      "city": "Duisburg",
+      "state": "NRW",
+      "country": "Germany",
+      "companySize": "5-6M t/yr",
+      "relationshipStatus": "Engaged Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Engaged",
+      "recommendedAction": "Facility analysis delivered (18 application areas). Waiting for Greg/Staltec to present.",
+      "notes": "Full facility analysis complete (18 ITC application areas). Connected through Staltec/Christian. Christian deeply connected in EU coking community — meets industry groups 4x/year.",
+      "products": "",
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 51.3897,
+      "lng": 6.7335,
+      "source": "Staltec partnership"
+    },
+    {
+      "id": 111,
+      "company": "Big River Steel Works (U.S. Steel)",
+      "contacts": [
+        {
+          "name": "David (Staltec US — Mobile AL)",
+          "email": "",
+          "phone": "",
+          "role": "Door opener"
+        }
+      ],
+      "industry": "Steel — EAF Flat-Rolled",
+      "city": "Osceola",
+      "state": "AR",
+      "country": "US",
+      "companySize": "6M t/yr",
+      "relationshipStatus": "Customer",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Active Customer",
+      "recommendedAction": "Expand from galvanizing snouts to full facility (13 application areas identified). David visits every 2 weeks.",
+      "notes": "ITC already installed (galvanizing snouts — case study exists). Facility analysis complete: 13 application areas including 4 EAFs, tunnel furnaces, RH degasser, batch annealing, electrical steel line. BR2 expansion doubled capacity to 6M t/yr.",
+      "products": "ITC 213, ITC 296A (snouts)",
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 35.705,
+      "lng": -89.9695,
+      "source": "Existing customer / Staltec David"
+    },
+    {
+      "id": 112,
+      "company": "Villares Metal (Brazil)",
+      "contacts": [
+        {
+          "name": "",
+          "email": "",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Steel — Specialty",
+      "city": "Sumaré",
+      "state": "SP",
+      "country": "Brazil",
+      "companySize": "",
+      "relationshipStatus": "Engaged Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Engaged",
+      "recommendedAction": "CeraCoat kick-off in progress. Greg forwarded inquiry.",
+      "notes": "CeraCoat @ Villares Metal kick-off email received 3/31/2026. Greg forwarded to team.",
+      "products": "",
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": -22.8216,
+      "lng": -47.2667,
+      "source": "Greg inbound"
+    },
+    {
+      "id": 113,
+      "company": "voestalpine Tubulars — Kindberg",
+      "contacts": [
+        {
+          "name": "",
+          "email": "",
+          "phone": "",
+          "role": ""
+        }
+      ],
+      "industry": "Steel — Seamless Tube",
+      "city": "Kindberg",
+      "state": "Styria",
+      "country": "Austria",
+      "companySize": "35K t production run",
+      "relationshipStatus": "Engaged Prospect",
+      "lifetimeRevenue": 0,
+      "lastOrderDate": "",
+      "salesStage": "Engaged",
+      "recommendedAction": "Furnace data translated & analyzed. ITC 100HT on austenitizing + tempering furnaces. Send analysis to Greg.",
+      "notes": "Kindberg data received from Greg (4/1/2026). Seamless tube heat treatment: austenitizing + quench + tempering. 35,000 tonnes / 1,913 production hours. Translation & analysis delivered to Greg.",
+      "products": "",
+      "invoiceCount": 0,
+      "balance": 0,
+      "lat": 47.5069,
+      "lng": 15.4533,
+      "source": "Greg / voestalpine relationship"
     }
   ]
 };
